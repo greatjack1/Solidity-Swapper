@@ -49,11 +49,27 @@ contract Ownable {
 
 contract SwapperFactory is Ownable {
 
-function createSwapperContract(address token,address router,address base) public returns (FlexSwapper) {
-    FlexSwapper swapper = new FlexSwapper(token,router,base);
-    return swapper;
-}
+    address public baseCurrency;
 
+    address[] public swappers;
+
+    function setBaseCurrency(address base) public onlyOwner {
+        baseCurrency = base;
+    }
+
+    function createSwapperContract(address token,address router) public returns (address) {
+    FlexSwapper swapper = new FlexSwapper(token,router,baseCurrency,address(this));
+    address swapperAddress = address(swapper);
+    swappers.push(swapperAddress);
+    return swapperAddress;
+    }
+
+    function withdraw(address payable destination) external payable onlyOwner {
+        destination.transfer(address(this).balance);
+    }
+
+
+    receive() external payable { 
 
 }
 
@@ -108,11 +124,14 @@ contract FlexSwapper is Ownable {
     
     address private mToken;
 
+    address private mDestination;
 
-    constructor(address token, address router,address base) {
+
+    constructor(address token, address router,address base,address destination) {
         mToken = token;
         mRouter = router;
         mBase = base;
+        mDestination = destination;
     }
     
         //address of the pancake swap router
