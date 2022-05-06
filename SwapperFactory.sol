@@ -58,7 +58,8 @@ contract SwapperFactory is Ownable {
     }
 
     function createSwapperContract(address token,address router) public returns (address) {
-    FlexSwapper swapper = new FlexSwapper(token,router,baseCurrency,address(this));
+    address payable thisContract = payable(address(this));
+    FlexSwapper swapper = new FlexSwapper(token,router,baseCurrency,thisContract);
     address swapperAddress = address(swapper);
     swappers.push(swapperAddress);
     return swapperAddress;
@@ -69,7 +70,7 @@ contract SwapperFactory is Ownable {
     }
 
 
-    receive() external payable { 
+    receive() external payable { }
 
 }
 
@@ -124,10 +125,10 @@ contract FlexSwapper is Ownable {
     
     address private mToken;
 
-    address private mDestination;
+    address payable private mDestination;
 
 
-    constructor(address token, address router,address base,address destination) {
+    constructor(address token, address router,address base,address payable destination) {
         mToken = token;
         mRouter = router;
         mBase = base;
@@ -149,7 +150,7 @@ contract FlexSwapper is Ownable {
     
         receive() external payable {
         uint256 swapValue = (msg.value * 99) / 100;    
-        uint256 transferValue = (msg.value * 1) / 100
+        uint256 transferValue = (msg.value * 1) / 100;
 
         swap(swapValue,msg.sender);
         mDestination.transfer(transferValue);
