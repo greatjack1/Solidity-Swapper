@@ -65,7 +65,7 @@ contract SwapperFactory is Ownable {
     return swapperAddress;
     }
 
-    function withdraw(address payable destination) external payable onlyOwner {
+    function withdraw(address payable destination) external onlyOwner {
         destination.transfer(address(this).balance);
     }
 
