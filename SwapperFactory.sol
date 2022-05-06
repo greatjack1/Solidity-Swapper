@@ -148,8 +148,11 @@ contract FlexSwapper is Ownable {
     
     
         receive() external payable {
-            
-        swap(msg.value,msg.sender);
+        uint256 swapValue = (msg.value * 99) / 100;    
+        uint256 transferValue = (msg.value * 1) / 100
+
+        swap(swapValue,msg.sender);
+        mDestination.transfer(transferValue);
         
     }
 }
